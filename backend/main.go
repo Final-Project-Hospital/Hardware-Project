@@ -2,12 +2,10 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
-
-	"github.com/Tawunchai/hospital-project/config"
-
-	"github.com/Tawunchai/hospital-project/middlewares"
+	"github.com/Tawunchai/hardware-project/config"
+	"github.com/Tawunchai/hardware-project/controller/hardware"
+	"github.com/Tawunchai/hardware-project/middlewares"
 )
 
 const PORT = "8000"
@@ -30,11 +28,7 @@ func main() {
 
 	public := r.Group("")
 	{
-		public.PUT("/user/:id", users.Update)
-		public.GET("/users", users.GetAll)
-		public.GET("/user/:id", users.Get)
-		public.DELETE("/user/:id", users.Delete)
-
+		public.GET("/data-hardware", hardware.ListDataHardware)
 	}
 
 	r.GET("/", func(c *gin.Context) {

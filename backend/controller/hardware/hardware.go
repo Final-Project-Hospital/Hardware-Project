@@ -1,13 +1,11 @@
 package hardware
 
-package controller
-
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sut67/team18/config"
-	"github.com/sut67/team18/entity"
+	"github.com/Tawunchai/hardware-project/config"
+	"github.com/Tawunchai/hardware-project/entity"
 )
 
 func ListDataHardware(c *gin.Context) {

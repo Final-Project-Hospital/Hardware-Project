@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/Tawunchai/hospital-project/services"
+	"github.com/Tawunchai/hardware-project/services"
 )
 
 var HashKey = []byte("very-secret")

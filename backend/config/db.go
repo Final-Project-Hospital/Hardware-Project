@@ -5,7 +5,7 @@ import (
 
    "fmt"
 
-   "github.com/Tawunchai/hospital-project/entity"
+   "github.com/Tawunchai/hardware-project/entity"
 
    "gorm.io/driver/sqlite"
 
