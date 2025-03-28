@@ -5,8 +5,6 @@ import (
 
    "fmt"
 
-   "time"
-
    "github.com/Tawunchai/hospital-project/entity"
 
    "gorm.io/driver/sqlite"
@@ -48,52 +46,17 @@ func SetupDatabase() {
 
    db.AutoMigrate(
 
-       &entity.Users{},
-
-       &entity.Genders{},
+       &entity.DataHardware{},
 
    )
+   DataHardware1 := entity.DataHardware{Data: 12.54}
+
+   DataHardware2 := entity.DataHardware{Data: 15.89}
 
 
-   GenderMale := entity.Genders{Gender: "Male"}
+   db.FirstOrCreate(&DataHardware1, &entity.DataHardware{Data: 12.54})
 
-   GenderFemale := entity.Genders{Gender: "Female"}
-
-
-   db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
-
-   db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
-
-
-   hashedPassword, _ := HashPassword("123456")
-
-   BirthDay, _ := time.Parse("2006-01-02", "1988-11-12")
-
-   User := &entity.Users{
-
-       FirstName: "Tawunchai",
-
-       LastName:  "Burakhon",
-
-       Email:     "tawunchaien@gmail.com",
-
-       Age:       80,
-
-       Password:  hashedPassword,
-
-       BirthDay:  BirthDay,
-
-       GenderID:  1,
-
-   }
-
-   db.FirstOrCreate(User, &entity.Users{
-
-       Email: "tawunchaien@gmail.com",
-
-   })
-
-
+   db.FirstOrCreate(&DataHardware2, &entity.DataHardware{Data: 15.89})
 
 
 }

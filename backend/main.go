@@ -7,12 +7,6 @@ import (
 
 	"github.com/Tawunchai/hospital-project/config"
 
-	"github.com/Tawunchai/hospital-project/controller/genders"
-
-	"github.com/Tawunchai/hospital-project/controller/logins"
-
-	"github.com/Tawunchai/hospital-project/controller/users"
-
 	"github.com/Tawunchai/hospital-project/middlewares"
 )
 
@@ -20,17 +14,13 @@ const PORT = "8000"
 
 func main() {
 
-	// open connection database
 	config.ConnectionDB()
 
-	// Generate databases
 	config.SetupDatabase()
 
 	r := gin.Default()
 
 	r.Use(CORSMiddleware())
-
-	r.POST("/login", logins.AddLogin)
 
 	authorized := r.Group("")
 	authorized.Use(middlewares.Authorizes())
@@ -45,7 +35,6 @@ func main() {
 		public.GET("/user/:id", users.Get)
 		public.DELETE("/user/:id", users.Delete)
 
-		r.GET("/genders", genders.GetAll)
 	}
 
 	r.GET("/", func(c *gin.Context) {
