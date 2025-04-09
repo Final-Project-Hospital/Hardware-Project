@@ -21,3 +21,24 @@ func ListDataHardware(c *gin.Context) {
 
 	c.JSON(http.StatusOK, dataHardware)
 }
+
+func CreateDataHardware(c *gin.Context) {
+	var dataHardware entity.DataHardware
+
+	if err := c.ShouldBindJSON(&dataHardware); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	db := config.DB()
+
+	if err := db.Create(&dataHardware).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถบันทึกข้อมูลได้"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "สร้างข้อมูลสำเร็จ",
+		"data":    dataHardware,
+	})
+}

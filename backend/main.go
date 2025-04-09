@@ -29,6 +29,7 @@ func main() {
 	public := r.Group("")
 	{
 		public.GET("/data-hardware", hardware.ListDataHardware)
+		public.POST("/create-data-hardware",hardware.CreateDataHardware)
 	}
 
 	r.GET("/", func(c *gin.Context) {

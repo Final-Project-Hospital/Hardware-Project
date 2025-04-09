@@ -1,0 +1,191 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "DHTesp.h"
+#include <time.h>
+
+#define pinDHT22 15
+DHTesp dht;
+
+// WiFi config
+const char* ssid = "vivo Y33T";
+const char* password = "0935096372";
+
+// Google Sheets webhook
+String serverName = "https://script.google.com/macros/s/AKfycby4zYHxIXY09v2bGhfLEMg3JcPLqcSGIDCyqMxA24w8mGXlZ1VxxlXqFgb8jxdkjHGW/exec";
+
+// NTP Time config
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 7 * 3600;
+const int daylightOffset_sec = 0;
+
+// LINE Messaging API
+String LINE_TOKEN = "fu2y79teeVFwE577ZCbwXOyHIYcYYK4rrubebwDEcMouX8PNzDZ4zCsnW+quBLQ9RxcaME5vQ3I1BW82d1/ZYezvWklVMUk+EGGfXRmI4jxXkFCtWQ+PRtJs9DsHDRjIqmrwKi6sd/Xovtb4QbodrwdB04t89/1O/w1cDnyilFU=";
+String LINE_USER_ID = "U3af93a2f92b1048757172584d47571c8";
+
+// Web server and WebSocket
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+// ส่งข้อมูลผ่าน WebSocket ไปยัง client ทุกคน
+void notifyClients(String message) {
+  ws.textAll(message);
+}
+
+// อ่านข้อมูล DHT แล้วส่งผ่าน WebSocket
+void sendSensorData() {
+  float temperature = dht.getTemperature();
+  float humidity = dht.getHumidity();
+
+  String json = "{";
+  json += "\"temperature\":" + String(temperature, 2) + ",";
+  json += "\"humidity\":" + String(humidity, 2);
+  json += "}";
+
+  notifyClients(json);
+}
+
+// เมื่อมี client เชื่อมต่อ/ตัดการเชื่อมต่อ
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+             void *arg, uint8_t *data, size_t len) {
+  if (type == WS_EVT_CONNECT) {
+    Serial.printf("WebSocket client #%u connected\n", client->id());
+  } else if (type == WS_EVT_DISCONNECT) {
+    Serial.printf("WebSocket client #%u disconnected\n", client->id());
+  }
+}
+
+// ส่งข้อความ LINE
+void sendLineMessage(String msg) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin("https://api.line.me/v2/bot/message/push");
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("Authorization", "Bearer " + LINE_TOKEN);
+
+    msg.replace("\n", "\\n"); // escape \n เพื่อไม่ให้ JSON error
+    String payload = "{\"to\":\"" + LINE_USER_ID + "\","
+                     "\"messages\":[{\"type\":\"text\",\"text\":\"" + msg + "\"}]}";
+
+    int statusCode = http.POST(payload);
+    Serial.print("LINE Message Status: ");
+    Serial.println(statusCode);
+
+    if (statusCode == 200) {
+      Serial.println("ส่งข้อความไปยัง LINE สำเร็จ");
+    } else {
+      Serial.println("ส่งข้อความไปยัง LINE ไม่สำเร็จ");
+      String response = http.getString();
+      Serial.print("รายละเอียดข้อผิดพลาด: ");
+      Serial.println(response);
+    }
+
+    http.end();
+  }
+}
+
+// อ่านเวลาเป็น string
+void getCurrentDateTime(String &dateStr, String &timeStr) {
+  struct tm timeinfo;
+  if (getLocalTime(&timeinfo)) {
+    char dateBuf[11], timeBuf[9];
+    strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", &timeinfo);
+    strftime(timeBuf, sizeof(timeBuf), "%H:%M:%S", &timeinfo);
+    dateStr = String(dateBuf);
+    timeStr = String(timeBuf);
+  } else {
+    dateStr = "000-00-00";
+    timeStr = "00:00:00";
+  }
+}
+
+// ส่งข้อมูลไปยัง Google Sheets
+void logToGoogleSheet(String dateStr, String timeStr, float temperature, float humidity, String status) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/json");
+
+    String payload = "{\"date\":\"" + dateStr +
+                     "\",\"time\":\"" + timeStr +
+                     "\",\"status\":\"" + status +
+                     "\",\"temperature\":\"" + String(temperature, 1) +
+                     "\",\"humidity\":\"" + String(humidity, 1) + "\"}";
+
+    int httpResponseCode = http.POST(payload);
+    Serial.print("Google Sheet HTTP Response Code: ");
+    Serial.println(httpResponseCode);
+    http.end();
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // เริ่มต้น DHT
+  dht.setup(pinDHT22, DHTesp::DHT22);
+
+  // เชื่อมต่อ WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.println("WiFi connected");
+  Serial.println(WiFi.localIP());
+
+  // ตั้งค่า WebSocket
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
+
+  // เริ่มเว็บเซิร์ฟเวอร์
+  server.begin();
+
+  // ตั้งค่าเวลา NTP
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+  } else {
+    Serial.println(&timeinfo, "Time acquired: %Y-%m-%d %H:%M:%S");
+  }
+}
+
+void loop() {
+  TempAndHumidity data = dht.getTempAndHumidity();
+  float temperature = data.temperature;
+  float humidity = data.humidity;
+  String status = dht.getStatusString();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    status = "ERROR";
+  }
+
+  String dateStr, timeStr;
+  getCurrentDateTime(dateStr, timeStr);
+
+  Serial.println("------------------------");
+  Serial.print("Date: "); Serial.println(dateStr);
+  Serial.print("Time: "); Serial.println(timeStr);
+  Serial.print("Status: "); Serial.println(status);
+  Serial.print("Temp: "); Serial.println(temperature);
+  Serial.print("Humidity: "); Serial.println(humidity);
+
+  // 📝 บันทึกทุกครั้ง
+  logToGoogleSheet(dateStr, timeStr, temperature, humidity, status);
+
+  // 🔔 แจ้งเตือนเฉพาะเมื่ออุณหภูมิสูงเกิน 35
+  if (temperature > 33) {
+    String alert = "🚨 อุณหภูมิสูงเกินกำหนด!\n";
+    sendLineMessage(alert);
+  }
+
+  // ส่งข้อมูลผ่าน WebSocket
+  sendSensorData();
+
+  delay(3000);  // ส่งข้อมูลทุก 3 วินาที
+}
+ 

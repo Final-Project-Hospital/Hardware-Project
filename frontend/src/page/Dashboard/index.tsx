@@ -7,6 +7,7 @@ const Dashboard: React.FC = () => {
       <Header />
       <div className="contentMain flex">
         <div className="sidebarWrapper w-[13%]"><Sidebar/></div>
+        <p>tempreture websocket by esp32 : </p>
       </div>
     </section>
   );

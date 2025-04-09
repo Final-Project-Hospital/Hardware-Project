@@ -3,6 +3,7 @@ import { useRoutes, RouteObject } from "react-router-dom";
 import Loadable from "../component/third-patry/Loadable";
 
 const Dashboard = Loadable(lazy(() => import("../page/Dashboard/index")));
+const Test = Loadable(lazy(() => import("../page/Hardware/index")));
 
 const UserRoutes = (): RouteObject[] => [
   {
@@ -12,6 +13,10 @@ const UserRoutes = (): RouteObject[] => [
   {
     path: "/dashboard",
     element: <Dashboard />, 
+  },
+  {
+    path: "/test",
+    element: <Test />, 
   },
 ];
 
