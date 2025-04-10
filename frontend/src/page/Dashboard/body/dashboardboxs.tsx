@@ -26,7 +26,7 @@ const Dashboard = () => {
       setTemperature(data.temperature); 
       setHumidity(data.humidity);
       if (data.status) {
-        setStatus(data.status); // ✅ รับค่า status จาก ESP
+        setStatus(data.status);
       }
       console.log(data);
     };
