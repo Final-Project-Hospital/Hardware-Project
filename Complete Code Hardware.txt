@@ -37,10 +37,18 @@ void notifyClients(String message) {
 void sendSensorData() {
   float temperature = dht.getTemperature();
   float humidity = dht.getHumidity();
+  String status = dht.getStatusString();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    status = "ERROR";
+  } else if (status == "OK") {
+    status = "Ready";
+  }
 
   String json = "{";
   json += "\"temperature\":" + String(temperature, 2) + ",";
-  json += "\"humidity\":" + String(humidity, 2);
+  json += "\"humidity\":" + String(humidity, 2) + ",";
+  json += "\"status\":\"" + status + "\"";
   json += "}";
 
   notifyClients(json);
@@ -64,7 +72,7 @@ void sendLineMessage(String msg) {
     http.addHeader("Content-Type", "application/json");
     http.addHeader("Authorization", "Bearer " + LINE_TOKEN);
 
-    msg.replace("\n", "\\n"); // escape \n เพื่อไม่ให้ JSON error
+    msg.replace("\n", "\\n");
     String payload = "{\"to\":\"" + LINE_USER_ID + "\","
                      "\"messages\":[{\"type\":\"text\",\"text\":\"" + msg + "\"}]}";
 
@@ -123,10 +131,8 @@ void logToGoogleSheet(String dateStr, String timeStr, float temperature, float h
 void setup() {
   Serial.begin(115200);
 
-  // เริ่มต้น DHT
   dht.setup(pinDHT22, DHTesp::DHT22);
 
-  // เชื่อมต่อ WiFi
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
   while (WiFi.status() != WL_CONNECTED) {
@@ -137,14 +143,10 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println(WiFi.localIP());
 
-  // ตั้งค่า WebSocket
   ws.onEvent(onEvent);
   server.addHandler(&ws);
-
-  // เริ่มเว็บเซิร์ฟเวอร์
   server.begin();
 
-  // ตั้งค่าเวลา NTP
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
@@ -162,6 +164,8 @@ void loop() {
 
   if (isnan(temperature) || isnan(humidity)) {
     status = "ERROR";
+  } else if (status == "OK") {
+    status = "Ready";
   }
 
   String dateStr, timeStr;
@@ -174,18 +178,14 @@ void loop() {
   Serial.print("Temp: "); Serial.println(temperature);
   Serial.print("Humidity: "); Serial.println(humidity);
 
-  // 📝 บันทึกทุกครั้ง
   logToGoogleSheet(dateStr, timeStr, temperature, humidity, status);
 
-  // 🔔 แจ้งเตือนเฉพาะเมื่ออุณหภูมิสูงเกิน 35
-  if (temperature > 33) {
+  if (temperature > 34) {
     String alert = "🚨 อุณหภูมิสูงเกินกำหนด!\n";
     sendLineMessage(alert);
   }
 
-  // ส่งข้อมูลผ่าน WebSocket
   sendSensorData();
 
-  delay(3000);  // ส่งข้อมูลทุก 3 วินาที
+  delay(3000);
 }
- 

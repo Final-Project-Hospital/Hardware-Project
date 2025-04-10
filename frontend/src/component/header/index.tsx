@@ -1,5 +1,4 @@
 import { Button } from "@mui/material"
-import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import Badge, { BadgeProps } from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -11,6 +10,10 @@ import React from "react";
 import Divider from '@mui/material/Divider';
 import { FaRegUser } from "react-icons/fa";
 import { PiSignOutBold } from "react-icons/pi";
+import { Link } from "react-router-dom"
+import SUTHLOGO from "../../assets/SUTH Logo.png"
+import { RxDashboard } from "react-icons/rx";
+import { BsDatabase } from "react-icons/bs";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -33,11 +36,25 @@ const index = () => {
 
   return (
     <div>
-      <header className="w-full h-[auto] py-2 pl-64 shadow-md pr-7 bg-[#fff] border-b flex items-center justify-between">
+      <header className="w-full h-[auto] py-2 pl-8 shadow-md pr-7 bg-[#fff] border-b flex items-center justify-between">
         <div className="part1">
-          <Button className="!w-[40px] !h-[40px] !rounded-full !min-w-[40px] text-[rgba(0,0,0,0.8)]">
-            <HiOutlineMenuAlt1 className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-          </Button>
+
+          <div className="part1 flex items-center gap-5">
+            <Link to="/">
+              <img src={SUTHLOGO} alt="Hospital SUT" className="w-[80px]" />
+            </Link>
+
+            <Button className="!text-black !normal-case flex items-center gap-1">
+              <RxDashboard className="text-[16px]" />
+              <span className="text-[16px] font-[600]">Dashboard</span>
+            </Button>
+
+            <Button className="!text-black !normal-case flex items-center gap-1">
+              <BsDatabase className="text-[16px]" />
+              <span className="text-[16px] font-[600]">Data Hardware</span>
+            </Button>
+          </div>
+
         </div>
         <div className="part2 w-[40%] flex items-center justify-end gap-5">
           <IconButton aria-label="cart">

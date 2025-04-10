@@ -2,9 +2,7 @@ import { Link } from "react-router-dom"
 import SUTHLOGO from "../../assets/SUTH Logo.png"
 import { Button } from "@mui/material"
 import { RxDashboard } from "react-icons/rx";
-import { IoLogOutOutline } from "react-icons/io5";
 import { BsDatabase } from "react-icons/bs";
-import { GrAnalytics } from "react-icons/gr";
 
 const index = () => {
   return (
@@ -21,17 +19,7 @@ const index = () => {
           </li>
 
           <li><Button className="w-full !capitalize !justify-start flex gap-3 !text-[16px] !text-[rgba(0,0,0,8)] !font-[600]">
-            <GrAnalytics className="text-[16px]" /><span>Analysis</span>
-          </Button>
-          </li>
-
-          <li><Button className="w-full !capitalize !justify-start flex gap-3 !text-[16px] !text-[rgba(0,0,0,8)] !font-[600]">
             <BsDatabase className="text-[16px]" /><span>Data Hardware</span>
-          </Button>
-          </li>
-
-          <li><Button className="w-full !capitalize !justify-start flex gap-3 !text-[16px] !text-[rgba(0,0,0,8)] !font-[600]">
-            <IoLogOutOutline className="text-[16px]" /><span>Logout</span>
           </Button>
           </li>
         </ul>

@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    background: #f1f1f129;
+}
+
 .MuiBadge-badge {
     background-color: red !important;
+}
+
+.btn-blue {
+    background: #3872fa !important;
+    color: white !important;
+    padding: 8px 20px !important;
+}
+
+.btn-blue:hover {
+    background: #2e63df !important;
 }

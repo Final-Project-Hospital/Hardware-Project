@@ -1,13 +1,13 @@
 import React from "react";
 import Header from "../../component/header/index";
-import Sidebar from "../../component/sidebar";
+import BodyDashboard  from "./body/dashboard";
+
 const Dashboard: React.FC = () => {
   return (
     <section className="main">
       <Header />
-      <div className="contentMain flex">
-        <div className="sidebarWrapper w-[13%]"><Sidebar/></div>
-        <p>tempreture websocket by esp32 : </p>
+      <div className="contentMain flex justify-center">
+        <div className="contentRight py-8 px-14 w-full"><BodyDashboard/></div>
       </div>
     </section>
   );
