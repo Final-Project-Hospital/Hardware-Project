@@ -19,6 +19,7 @@ declare module "styled-components" {
       malachite: string;
       floralWhite: string;
       orange: string;
+      orangesuff:string;
       white: string;
       black: string;
       columbiaBlue: string;

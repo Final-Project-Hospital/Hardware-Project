@@ -13,52 +13,52 @@ import {
 
 // กำหนดประเภทของค่าที่รับเข้าและส่งออกจาก formatter functions
 const formatTooltipValue = (value: number): string => {
-  return `${value} sales`;
+  return `${value}`;
 };
 
 const formatYAxisLabel = (value: number): string => {
-  return `${value}k`;
+  return `${value}`;
 };
 
 const formatLegendValue = (value: string): string => {
-  return value.charAt(0).toUpperCase() + value.slice(1) + " Sales";
+  return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
 const REVENUE_DATA = [
     {
       day: "Mon",
-      online: 14,
-      offline: 12.5,
+      Tempreture: 14,
+      Humidity: 12.5,
     },
     {
       day: "Tue",
-      online: 17,
-      offline: 12,
+      Tempreture: 17,
+      Humidity: 12,
     },
     {
       day: "Wed",
-      online: 6,
-      offline: 23,
+      Tempreture: 6,
+      Humidity: 23,
     },
     {
       day: "Thu",
-      online: 16,
-      offline: 7,
+      Tempreture: 16,
+      Humidity: 7,
     },
     {
       day: "Fri",
-      online: 13,
-      offline: 12,
+      Tempreture: 13,
+      Humidity: 12,
     },
     {
       day: "Sat",
-      online: 17,
-      offline: 13,
+      Tempreture: 17,
+      Humidity: 13,
     },
     {
       day: "Sun",
-      online: 21,
-      offline: 12,
+      Tempreture: 21,
+      Humidity: 12,
     },
   ];
 
@@ -116,7 +116,7 @@ const Revenue = () => {
                 fontSize: 14,
               }}
               interval={0}
-              ticks={[0, 5, 10, 15, 20, 25]}
+              ticks={[0, 10, 20, 30, 40, 50]}
             />
             <Tooltip
               cursor={{ fill: "transparent" }}
@@ -131,7 +131,7 @@ const Revenue = () => {
               }}
             />
             <Bar
-              dataKey="online"
+              dataKey="Tempreture"
               fill="#0095FF"
               activeBar={false}
               isAnimationActive={false}
@@ -139,8 +139,8 @@ const Revenue = () => {
               barSize={18}
             />
             <Bar
-              dataKey="offline"
-              fill="#00E096"
+              dataKey="Humidity"
+              fill="#fb963c"
               activeBar={false}
               isAnimationActive={false}
               radius={[4, 4, 4, 4]}

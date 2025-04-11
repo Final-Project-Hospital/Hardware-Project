@@ -76,18 +76,18 @@ export const TopProductsWrap = styled.div`
 
           &:nth-child(2) {
             .tbl-progress-bar {
-              background-color: ${(props) => props.theme.colors.aquamarine};
-              color: ${(props) => props.theme.colors.emerald};
+              background-color: ${(props) => props.theme.colors.orangesuff};
+              color: ${(props) => props.theme.colors.orange};
 
               .bar-fill {
-                background-color: ${(props) => props.theme.colors.emerald};
+                background-color: ${(props) => props.theme.colors.orange};
               }
             }
 
             .tbl-badge {
-              background-color: ${(props) => props.theme.colors.nyanza};
-              color: ${(props) => props.theme.colors.emerald};
-              border: 1px solid ${(props) => props.theme.colors.emerald};
+              background-color: ${(props) => props.theme.colors.orangesuff};
+              color: ${(props) => props.theme.colors.orange};
+              border: 1px solid ${(props) => props.theme.colors.orange};
             }
           }
 

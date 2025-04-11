@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/Tawunchai/hardware-project/entity"
@@ -35,6 +36,11 @@ func ConnectionDB() {
 
 }
 
+func randomFloat(min, max float64) float64 {
+	return min + rand.Float64()*(max-min)
+}
+
+
 func SetupDatabase() {
 
 	db.AutoMigrate(
@@ -42,16 +48,18 @@ func SetupDatabase() {
 		&entity.HardwareData{},
 	)
 
-   // HardwareData
-
-	date1 := time.Date(2025, 4, 11, 9, 0, 0, 0, time.Local)
-	date2 := time.Date(2025, 4, 11, 15, 30, 0, 0, time.Local)
-
-	HardwareData1 := entity.HardwareData{Formaldehyde: 4.52,Tempreture: 24.56,Humidity: 70.00, Date: date1}
-
-   HardwareData2 := entity.HardwareData{Formaldehyde: 2.75,Tempreture: 32.56,Humidity: 65.23, Date: date2}
-
-	db.FirstOrCreate(&HardwareData1, &entity.HardwareData{Formaldehyde: 4.52,Tempreture: 24.56,Humidity: 70.00, Date: date1})
-	db.FirstOrCreate(&HardwareData2, &entity.HardwareData{Formaldehyde: 2.75,Tempreture: 32.56,Humidity: 65.23, Date: date2})
+   startDate := time.Date(2025, 4, 1, 0, 0, 0, 0, time.Local)
+   endDate := time.Date(2025, 5, 30, 0, 0, 0, 0, time.Local)
+   
+   for d := startDate; !d.After(endDate); d = d.AddDate(0, 0, 1) {
+	   morning := time.Date(d.Year(), d.Month(), d.Day(), 9, 0, 0, 0, time.Local)
+	   dataMorning := entity.HardwareData{
+		   Formaldehyde: randomFloat(2.0, 5.0),
+		   Tempreture:   randomFloat(24.0, 30.0),
+		   Humidity:     randomFloat(60.0, 75.0),
+		   Date:         morning,
+	   }
+	   db.FirstOrCreate(&dataMorning, &entity.HardwareData{Date: morning})
+   }
 
 }

@@ -18,37 +18,52 @@ const TopProducts = () => {
       const res = await ListDataHardware();
       if (res?.status === 200) {
         const data = res.data;
-
+  
         if (data.length > 0) {
-          const latest = data[data.length - 1];
+          const total = data.reduce(
+            (acc : any, item : any) => {
+              acc.formaldehyde += item.Formaldehyde;
+              acc.humidity += item.Humidity;
+              acc.temperature += item.Tempreture;
+              return acc;
+            },
+            { formaldehyde: 0, humidity: 0, temperature: 0 }
+          );
+  
+          const count = data.length;
+  
+          const avgFormaldehyde = total.formaldehyde / count;
+          const avgHumidity = total.humidity / count;
+          const avgTemperature = total.temperature / count;
+  
           const formattedData: HardwareStat[] = [
             {
               id: 1,
-              name: "Formaldehyde",
-              popularityPercent: Math.min((latest.Formaldehyde / 5) * 100, 100), 
-              Percent: latest.Formaldehyde.toFixed(2),
+              name: "Temperature",
+              popularityPercent: Math.min((avgTemperature / 100) * 100, 100),
+              Percent: avgTemperature.toFixed(2),
             },
             {
               id: 2,
               name: "Humidity",
-              popularityPercent: Math.min(latest.Humidity, 100), 
-              Percent: latest.Humidity.toFixed(2),
+              popularityPercent: Math.min(avgHumidity, 100),
+              Percent: avgHumidity.toFixed(2),
             },
             {
               id: 3,
-              name: "Temperature",
-              popularityPercent: Math.min((latest.Tempreture / 100) * 100, 100), 
-              Percent: latest.Tempreture.toFixed(2),
+              name: "Formaldehyde",
+              popularityPercent: Math.min((avgFormaldehyde / 5) * 100, 100),
+              Percent: avgFormaldehyde.toFixed(2),
             },
-          ];          
-
+          ];
+  
           setHardwareStats(formattedData);
         }
       }
     };
-
+  
     fetchHardwareData();
-  }, []);
+  }, []);  
 
   return (
     <TopProductsWrap>

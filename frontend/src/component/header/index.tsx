@@ -45,19 +45,13 @@ const index = () => {
               <img src={SUTHLOGO} alt="Hospital SUT" className="w-[80px]" />
             </Link>
 
-            <Button className="!text-black !normal-case flex items-center gap-1">
-              <RxDashboard className="text-[16px]" />
-              <span className="text-[16px] font-[600]">Dashboard</span>
-            </Button>
-
-            <Button className="!text-black !normal-case flex items-center gap-1">
-              <BsDatabase className="text-[16px]" />
+            <Button className="!text-black !normal-case flex items-center gap-1 ">
               <span className="text-[16px] font-[600]">Data Hardware</span>
             </Button>
           </div>
 
         </div>
-        <div className="part2 w-[40%] flex items-center justify-end gap-5">
+        <div className="part2 w-[40%] flex items-center justify-end ">
           <AppBarWrap>
             <Changelanguage />
           </AppBarWrap>
