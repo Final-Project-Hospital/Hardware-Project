@@ -67,7 +67,7 @@ const Revenue = () => {
     <RevenueWrap>
       <div className="block-head">
         <BlockTitle className="block-title">
-          <h3>Total Revenue</h3>
+          <h3>Tempreture And Humidity Data</h3>
         </BlockTitle>
       </div>
       <BlockContentWrap className="bar-chart">

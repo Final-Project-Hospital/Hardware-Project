@@ -129,7 +129,7 @@ import {
       <VisitorsBlockWrap>
         <div className="block-head">
           <BlockTitle className="block-title">
-            <h3>Visitor Insights</h3>
+            <h3>Formaldehyde Data</h3>
           </BlockTitle>
         </div>
         <BlockContentWrap className="line-chart">

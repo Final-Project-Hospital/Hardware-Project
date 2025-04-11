@@ -99,12 +99,23 @@ async function CreateUser(data: UsersInterface) {
 
 }
 
-// ฟังก์ชันสร้างข้อมูล DataHardware
 async function CreateDataHardware(data: { date: string; data: number }) {
   return await axios
     .post(`${apiUrl}/create-data-hardware`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
+}
+
+async function ListDataHardware() {
+
+  return await axios
+
+    .get(`${apiUrl}/data-hardware`, requestOptions)
+
+    .then((res) => res)
+
+    .catch((e) => e.response);
+
 }
 
 
@@ -116,4 +127,5 @@ export {
   DeleteUsersById,
   CreateUser,
   CreateDataHardware,
+  ListDataHardware,
 };

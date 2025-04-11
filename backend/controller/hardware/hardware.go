@@ -9,7 +9,7 @@ import (
 )
 
 func ListDataHardware(c *gin.Context) {
-	var dataHardware []entity.DataHardware
+	var dataHardware []entity.HardwareData
 
 	db := config.DB()
 	result := db.Find(&dataHardware)
@@ -23,7 +23,7 @@ func ListDataHardware(c *gin.Context) {
 }
 
 func CreateDataHardware(c *gin.Context) {
-	var dataHardware entity.DataHardware
+	var dataHardware entity.HardwareData
 
 	if err := c.ShouldBindJSON(&dataHardware); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

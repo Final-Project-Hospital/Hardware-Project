@@ -1,8 +1,7 @@
 import { Button } from "@mui/material"
 import Badge, { BadgeProps } from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import { FaRegBell } from "react-icons/fa6";
+import { AppBarWrap } from "./AppBar.styles";
 import Profile from "../../assets/profile-test.jpg"
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,6 +13,8 @@ import { Link } from "react-router-dom"
 import SUTHLOGO from "../../assets/SUTH Logo.png"
 import { RxDashboard } from "react-icons/rx";
 import { BsDatabase } from "react-icons/bs";
+import Changelanguage from "./language"
+import ProfileReal from "./Profile"
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -57,11 +58,9 @@ const index = () => {
 
         </div>
         <div className="part2 w-[40%] flex items-center justify-end gap-5">
-          <IconButton aria-label="cart">
-            <StyledBadge badgeContent={4} color="secondary">
-              <FaRegBell />
-            </StyledBadge>
-          </IconButton>
+          <AppBarWrap>
+            <Changelanguage />
+          </AppBarWrap>
 
           <div className="relative">
             <div className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer" onClick={handleClick}>
