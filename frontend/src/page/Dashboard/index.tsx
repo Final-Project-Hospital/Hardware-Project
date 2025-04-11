@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../../component/header/index";
-import BodyDashboard  from "./body/dashboard";
+import BodyDashboard  from "./body/Dashboard/dashboard";
 
 const Dashboard: React.FC = () => {
   return (

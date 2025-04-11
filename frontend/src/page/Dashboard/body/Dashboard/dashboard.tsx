@@ -1,9 +1,10 @@
 import DashboardBoxs from "./dashboardboxs"
-import picture1 from "../../../assets/ESP32.png"
+import picture1 from "../../../../assets/ESP32.png"
 import { FaPlus } from "react-icons/fa6";
 import { Button } from "@mui/material";
-import Chart1 from "./Chart_Temp_Humi";
-import Chart2 from "./Chart_Formaldehyde";
+import Chart1 from "../Tempreture";
+import Chart2 from "../Formaldehyde/index";
+import Avergare from "../AverageDataHareware/index";
 
 const dashboard = () => {
 
@@ -146,6 +147,9 @@ const dashboard = () => {
         <div className="flex-1">
           <Chart2 />
         </div>
+      </div>
+      <div className="mt-3">
+        <Avergare />
       </div>
     </>
   )
