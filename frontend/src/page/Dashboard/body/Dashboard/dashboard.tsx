@@ -39,7 +39,7 @@ const Dashboard = () => {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [downloadFilename, setDownloadFilename] = useState("hardware-data.csv");
   const [downloadNow, setDownloadNow] = useState(false);
-
+// @ts-ignore
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };

@@ -2,12 +2,13 @@ import React from 'react';
 import ConfigRoutes from './routes/mainroutes';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './style/theme/theme';
+import  LanguageProvider  from './component/contextlang';
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <ConfigRoutes />
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <ConfigRoutes />
+      </ThemeProvider>
   );
 };
 

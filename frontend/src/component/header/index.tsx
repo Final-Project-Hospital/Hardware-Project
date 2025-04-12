@@ -69,20 +69,17 @@ const AppBar = () => {
             anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             transformOrigin={{ vertical: "top", horizontal: "left" }}
           >
-            <MenuItem onClick={() => handleSelectHardwareType("Temperature")}>
-              Temperature
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectHardwareType("Humidity")}>
-              Humidity
-            </MenuItem>
             <MenuItem onClick={() => handleSelectHardwareType("Formaldehyde")}>
               Formaldehyde
+            </MenuItem>
+            <MenuItem onClick={() => handleSelectHardwareType("temperature_and_humidity")}>
+            Temperature AND Humidity
             </MenuItem>
           </Menu>
         </div>
 
         <div className="part2 w-[40%] flex items-center justify-end">
-          <AppBarWrap>
+          <AppBarWrap className="mr-6">
             <Changelanguage />
           </AppBarWrap>
 
