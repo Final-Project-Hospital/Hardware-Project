@@ -24,9 +24,11 @@ import {
 import Chart1 from "../Tempreture";
 import Chart2 from "../Formaldehyde/index";
 import Avergare from "../AverageDataHareware/index";
-import Progrss from "../../../../component/progress/formaldehyde";
+import ProgrssFormaldehyde from "../../../../component/progress/formaldehyde";
+import ProgrssTempreture from "../../../../component/progress/tempreture";
+import ProgrssHumidity from "../../../../component/progress/humidity";
 import { CSVLink } from "react-csv";
-
+import { MdEditSquare } from "react-icons/md";
 
 const Dashboard = () => {
   const [hardwareData, setHardwareData] = useState<any[]>([]);
@@ -39,7 +41,7 @@ const Dashboard = () => {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [downloadFilename, setDownloadFilename] = useState("hardware-data.csv");
   const [downloadNow, setDownloadNow] = useState(false);
-// @ts-ignore
+  // @ts-ignore
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -72,12 +74,12 @@ const Dashboard = () => {
       const row: any = { "No": index + 1 };
 
       row["Date"] = item.Date;
-  
+
       if (selectedColumns.includes("Formaldehyde")) row["Formaldehyde"] = item.Formaldehyde;
       if (selectedColumns.includes("Temperature")) row["Temperature"] = item.Tempreture;
       if (selectedColumns.includes("Humidity")) row["Humidity"] = item.Humidity;
       if (selectedColumns.includes("Action")) row["Action"] = "Edit";
-  
+
       return row;
     });
   };
@@ -167,11 +169,11 @@ const Dashboard = () => {
             <Table stickyHeader aria-label="hardware table">
               <TableHead>
                 <TableRow>
-                  <TableCell>No</TableCell>
-                  {selectedColumns.includes("Formaldehyde") && <TableCell>Formaldehyde</TableCell>}
-                  {selectedColumns.includes("Temperature") && <TableCell>Temperature</TableCell>}
-                  {selectedColumns.includes("Humidity") && <TableCell>Humidity</TableCell>}
-                  {selectedColumns.includes("Action") && <TableCell>Action</TableCell>}
+                  <TableCell><strong>No</strong></TableCell>
+                  {selectedColumns.includes("Formaldehyde") && <TableCell><strong>Formaldehyde ppm.</strong></TableCell>}
+                  {selectedColumns.includes("Temperature") && <TableCell><strong>Temperature °C.</strong></TableCell>}
+                  {selectedColumns.includes("Humidity") && <TableCell><strong>Humidity %</strong></TableCell>}
+                  {selectedColumns.includes("Action") && <TableCell><strong className="flex">Action <MdEditSquare size={20} className="ml-2 text-blue-500"/></strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -183,14 +185,20 @@ const Dashboard = () => {
                       {selectedColumns.includes("Formaldehyde") && (
                         <TableCell>
                           <p className="text-[14px] w-[150px] font-semibold">{item.Formaldehyde ?? "-"}</p>
-                          <Progrss value={item.Formaldehyde ?? "-"} type="success" />
+                          <ProgrssFormaldehyde value={item.Formaldehyde ?? "-"} />
                         </TableCell>
                       )}
-                      {selectedColumns.includes("Temperature") && <TableCell>{item.Tempreture ?? "-"}</TableCell>}
-                      {selectedColumns.includes("Humidity") && <TableCell>{item.Humidity ?? "-"}</TableCell>}
+                      {selectedColumns.includes("Temperature") && (
+                        <TableCell>
+                          <p className="text-[14px] w-[150px] font-semibold">{item.Tempreture ?? "-"}</p>
+                          <ProgrssTempreture value={item.Tempreture ?? "-"} />
+                        </TableCell>)}
+                      {selectedColumns.includes("Humidity") && <TableCell>
+                        <p className="text-[14px] w-[150px] font-semibold">{item.Humidity ?? "-"}</p>
+                        <ProgrssHumidity value={item.Humidity ?? "-"} /></TableCell>}
                       {selectedColumns.includes("Action") && (
                         <TableCell>
-                          <a href="#" className="text-blue-600 hover:underline">Edit</a>
+                          <a href="#" className="text-blue-600 hover:underline"><strong>Edit</strong></a>
                         </TableCell>
                       )}
                     </TableRow>

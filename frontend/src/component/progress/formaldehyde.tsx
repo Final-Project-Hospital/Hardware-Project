@@ -6,7 +6,7 @@ interface Props {
 }
 
 const Index: React.FC<Props> = (props) => {
-  const barColor = props.type === 'success' ? 'bg-green-400' : 'bg-blue-500';
+  const barColor = props.value != 0 ? 'bg-purple-400' : 'bg-white-400';
   const widthPercent = (props.value / 5) * 100; 
 
   return (

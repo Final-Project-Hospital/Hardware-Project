@@ -6,8 +6,19 @@ interface Props {
 }
 
 const Index: React.FC<Props> = (props) => {
-  const barColor = props.type === 'success' ? 'bg-green-400' : 'bg-blue-500';
-  const widthPercent = (props.value / 5) * 100; 
+  const { value } = props;
+
+  let barColor = 'bg-white'; 
+
+  if (value >= 40 && value <= 60) {
+    barColor = 'bg-blue-400'; 
+  } else if ((value >= 30 && value < 40) || (value > 60 && value <= 70)) {
+    barColor = 'bg-green-400'; 
+  } else {
+    barColor = 'bg-yellow-400'; 
+  }
+
+  const widthPercent = Math.min((value / 100) * 100, 100); 
 
   return (
     <div className="w-[150px] h-auto overflow-hidden rounded-md bg-[#f1f1f1]">
