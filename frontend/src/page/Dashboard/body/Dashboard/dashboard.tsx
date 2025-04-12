@@ -27,6 +27,7 @@ import Avergare from "../AverageDataHareware/index";
 import Progrss from "../../../../component/progress/formaldehyde";
 import { CSVLink } from "react-csv";
 
+
 const Dashboard = () => {
   const [hardwareData, setHardwareData] = useState<any[]>([]);
   const [page, setPage] = useState(0);

@@ -1,6 +1,4 @@
 import { Button } from "@mui/material"
-import Badge, { BadgeProps } from '@mui/material/Badge';
-import { styled } from '@mui/material/styles';
 import { AppBarWrap } from "./AppBar.styles";
 import Profile from "../../assets/profile-test.jpg"
 import Menu from '@mui/material/Menu';
@@ -9,55 +7,90 @@ import React from "react";
 import Divider from '@mui/material/Divider';
 import { FaRegUser } from "react-icons/fa";
 import { PiSignOutBold } from "react-icons/pi";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import SUTHLOGO from "../../assets/SUTH Logo.png"
-import { RxDashboard } from "react-icons/rx";
-import { BsDatabase } from "react-icons/bs";
 import Changelanguage from "./language"
-import ProfileReal from "./Profile"
+import { TbDatabaseImport } from "react-icons/tb";
 
-const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: -3,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
-}));
+const AppBar = () => {
+  const navigate = useNavigate();
 
-const index = () => {
-  const [anchorMyAcc, setAnchorMyAcc] = React.useState(null)
-  const openMyAcc = Boolean(anchorMyAcc)
-  const handleClick = (event: any) => {
-    setAnchorMyAcc(event.currentTarget)
+  const [anchorMyAcc, setAnchorMyAcc] = React.useState<null | HTMLElement>(null);
+  const openMyAcc = Boolean(anchorMyAcc);
+
+  const handleClickMyAcc = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorMyAcc(event.currentTarget);
   };
+
   const handleCloseMyAcc = () => {
-    setAnchorMyAcc(null)
-  }
+    setAnchorMyAcc(null);
+  };
+
+  const [anchorHardware, setAnchorHardware] = React.useState<null | HTMLElement>(null);
+  const openHardware = Boolean(anchorHardware);
+
+  const handleClickHardware = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorHardware(event.currentTarget);
+  };
+
+  const handleCloseHardware = () => {
+    setAnchorHardware(null);
+  };
+
+  const handleSelectHardwareType = (type: string) => {
+    console.log("Selected:", type);
+    // 👉 เช่น navigate ไปหน้าแสดงกราฟ หรือ filter กราฟ
+    navigate(`/hardware/${type.toLowerCase()}`); // เช่น /hardware/temperature
+    handleCloseHardware();
+  };
 
   return (
     <div>
       <header className="w-full h-[auto] py-2 pl-8 shadow-md pr-7 bg-[#fff] border-b flex items-center justify-between">
-        <div className="part1">
+        <div className="part1 flex items-center gap-5">
+          <Link to="/">
+            <img src={SUTHLOGO} alt="Hospital SUT" className="w-[80px]" />
+          </Link>
 
-          <div className="part1 flex items-center gap-5">
-            <Link to="/">
-              <img src={SUTHLOGO} alt="Hospital SUT" className="w-[80px]" />
-            </Link>
+          <Button
+            className="!text-black !normal-case flex items-center gap-1"
+            onClick={handleClickHardware}
+          >
+            <span className="text-[16px] font-[600] flex">
+              <TbDatabaseImport className="ml-1 w-6 mt-1 mr-1" />
+              Data Hardware
+            </span>
+          </Button>
 
-            <Button className="!text-black !normal-case flex items-center gap-1 ">
-              <span className="text-[16px] font-[600]">Data Hardware</span>
-            </Button>
-          </div>
-
+          <Menu
+            anchorEl={anchorHardware}
+            open={openHardware}
+            onClose={handleCloseHardware}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            transformOrigin={{ vertical: "top", horizontal: "left" }}
+          >
+            <MenuItem onClick={() => handleSelectHardwareType("Temperature")}>
+              Temperature
+            </MenuItem>
+            <MenuItem onClick={() => handleSelectHardwareType("Humidity")}>
+              Humidity
+            </MenuItem>
+            <MenuItem onClick={() => handleSelectHardwareType("Formaldehyde")}>
+              Formaldehyde
+            </MenuItem>
+          </Menu>
         </div>
-        <div className="part2 w-[40%] flex items-center justify-end ">
+
+        <div className="part2 w-[40%] flex items-center justify-end">
           <AppBarWrap>
             <Changelanguage />
           </AppBarWrap>
 
           <div className="relative">
-            <div className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer" onClick={handleClick}>
+            <div
+              className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer"
+              onClick={handleClickMyAcc}
+            >
               <img src={Profile} className="w-full h-full object-cover" />
             </div>
             <Menu
@@ -73,12 +106,6 @@ const index = () => {
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                     mt: 1.5,
-                    '& .MuiAvatar-root': {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
-                    },
                     '&::before': {
                       content: '""',
                       display: 'block',
@@ -97,7 +124,7 @@ const index = () => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <MenuItem onClick={handleCloseMyAcc} className="!bg-white">
+              <MenuItem className="!bg-white">
                 <div className="flex items-center gap-3">
                   <div className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer">
                     <img src={Profile} className="w-full h-full object-cover" />
@@ -110,19 +137,21 @@ const index = () => {
               </MenuItem>
               <Divider />
 
-              <MenuItem onClick={handleCloseMyAcc} className="flex items-center gap-3">
-                <FaRegUser className="text-[16px]" /> <span className="text-[14px]">Profile</span>
+              <MenuItem className="flex items-center gap-3">
+                <FaRegUser className="text-[16px]" />
+                <span className="text-[14px]">Profile</span>
               </MenuItem>
 
-              <MenuItem onClick={handleCloseMyAcc} className="flex items-center gap-3">
-                <PiSignOutBold className="text-[18px]" /> <span className="text-[14px]">Sign Out</span>
+              <MenuItem className="flex items-center gap-3">
+                <PiSignOutBold className="text-[18px]" />
+                <span className="text-[14px]">Sign Out</span>
               </MenuItem>
             </Menu>
           </div>
         </div>
       </header>
     </div>
-  )
-}
+  );
+};
 
-export default index
+export default AppBar;
