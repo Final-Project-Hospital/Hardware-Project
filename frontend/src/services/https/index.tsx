@@ -146,6 +146,12 @@ async function FindDataHardwareByYear(year: number) {
     .catch((e) => e.response);
 }
 
+async function FindDataHardwareByDateRange(start: string, end: string) {
+  return await axios
+    .get(`${apiUrl}/hardware/by-date-range?start=${start}&end=${end}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 
 export {
   GetGender,
@@ -157,6 +163,7 @@ export {
   CreateDataHardware,
   ListDataHardware,
   FindDataHardwareByDate,
+  FindDataHardwareByDateRange,
   FindDataHardwareByWeekday,
   FindDataHardwareByMonth,
   FindDataHardwareByYear,

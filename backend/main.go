@@ -30,7 +30,8 @@ func main() {
 	{
 		public.GET("/data-hardware", hardware.ListDataHardware)
 		public.POST("/create-data-hardware",hardware.CreateDataHardware)
-		public.GET("/hardware/by-date", hardware.FindDataHardwareByDate) 
+		public.GET("/hardware/by-date", hardware.FindDataHardwareByDate)
+		public.GET("/hardware/by-date-range", hardware.FindDataHardwareByDateRange)
 		public.GET("/data-hardware/weekday", hardware.FindDataHardwareByWeekday) 
 		public.GET("/hardware/by-month", hardware.FindDataHardwareByMonth)
 		public.GET("/hardware/by-year", hardware.FindDataHardwareByYear)

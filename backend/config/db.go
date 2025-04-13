@@ -41,7 +41,7 @@ func SetupDatabase() {
 
 	for year := 2024; year <= 2025; year++ {
 		for month := 1; month <= 12; month++ {
-			for day := 1; day <= 14; day++ {
+			for day := 1; day <= 28; day++ {
 				if day <= daysInMonth(year, time.Month(month)) {
 					morning := time.Date(year, time.Month(month), day, 9, 0, 0, 0, time.Local)
 

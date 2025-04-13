@@ -69,6 +69,39 @@ func FindDataHardwareByDate(c *gin.Context) {
 	c.JSON(http.StatusOK, dataHardware)
 }
 
+func FindDataHardwareByDateRange(c *gin.Context) {
+	startStr := c.Query("start") // ?start=2025-04-01
+	endStr := c.Query("end")     // ?end=2025-04-10
+
+	// ตรวจสอบว่าใส่ครบทั้ง start และ end
+	if startStr == "" || endStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณาระบุ start และ end ในรูปแบบ YYYY-MM-DD เช่น ?start=2025-04-01&end=2025-04-10"})
+		return
+	}
+
+	// แปลง string เป็น time.Time
+	startDate, err1 := time.Parse("2006-01-02", startStr)
+	endDate, err2 := time.Parse("2006-01-02", endStr)
+
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "รูปแบบวันที่ไม่ถูกต้อง ควรใช้ YYYY-MM-DD"})
+		return
+	}
+
+	endDate = endDate.AddDate(0, 0, 1)
+
+	db := config.DB()
+	var dataHardware []entity.HardwareData
+
+	result := db.Where("date >= ? AND date < ?", startDate, endDate).Find(&dataHardware)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถดึงข้อมูลได้"})
+		return
+	}
+
+	c.JSON(http.StatusOK, dataHardware)
+}
+
 func FindDataHardwareByWeekday(c *gin.Context) {
 	weekdayQuery := c.Query("weekday") // เช่น ?weekday=Monday
 
