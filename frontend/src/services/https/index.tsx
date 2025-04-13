@@ -118,6 +118,34 @@ async function ListDataHardware() {
 
 }
 
+async function FindDataHardwareByDate(date: string) {
+  return await axios
+    .get(`${apiUrl}/hardware/by-date?date=${date}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function FindDataHardwareByWeekday(weekday: string) {
+  return await axios
+    .get(`${apiUrl}/data-hardware/weekday?weekday=${weekday}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function FindDataHardwareByMonth(month: number, year: number) {
+  return await axios
+    .get(`${apiUrl}/hardware/by-month?month=${month}&year=${year}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function FindDataHardwareByYear(year: number) {
+  return await axios
+    .get(`${apiUrl}/hardware/by-year?year=${year}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 
 export {
   GetGender,
@@ -128,4 +156,8 @@ export {
   CreateUser,
   CreateDataHardware,
   ListDataHardware,
+  FindDataHardwareByDate,
+  FindDataHardwareByWeekday,
+  FindDataHardwareByMonth,
+  FindDataHardwareByYear,
 };

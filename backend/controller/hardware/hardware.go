@@ -69,6 +69,56 @@ func FindDataHardwareByDate(c *gin.Context) {
 	c.JSON(http.StatusOK, dataHardware)
 }
 
+func FindDataHardwareByWeekday(c *gin.Context) {
+	weekdayQuery := c.Query("weekday") // เช่น ?weekday=Monday
+
+	// แปลง string เป็น time.Weekday
+	var targetDay time.Weekday
+	switch weekdayQuery {
+	case "Sunday":
+		targetDay = time.Sunday
+	case "Monday":
+		targetDay = time.Monday
+	case "Tuesday":
+		targetDay = time.Tuesday
+	case "Wednesday":
+		targetDay = time.Wednesday
+	case "Thursday":
+		targetDay = time.Thursday
+	case "Friday":
+		targetDay = time.Friday
+	case "Saturday":
+		targetDay = time.Saturday
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณาระบุชื่อวันให้ถูกต้อง เช่น ?weekday=Monday"})
+		return
+	}
+
+	// ดึงข้อมูลทั้งหมดจากฐานข้อมูล (หรือตามช่วงเวลาได้ถ้าอยากจำกัด)
+	db := config.DB()
+	var allData []entity.HardwareData
+	if err := db.Find(&allData).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถดึงข้อมูลทั้งหมดได้"})
+		return
+	}
+
+	// filter ตามวันในสัปดาห์
+	var filteredData []entity.HardwareData
+	for _, data := range allData {
+		if data.Date.Weekday() == targetDay {
+			filteredData = append(filteredData, data)
+		}
+	}
+
+	if len(filteredData) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "ไม่พบข้อมูลในวัน " + weekdayQuery})
+		return
+	}
+
+	c.JSON(http.StatusOK, filteredData)
+}
+
+
 func FindDataHardwareByMonth(c *gin.Context) {
 	monthStr := c.Query("month")
 	yearStr := c.Query("year")
