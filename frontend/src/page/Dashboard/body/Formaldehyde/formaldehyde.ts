@@ -6,7 +6,7 @@ export const VisitorsBlockWrap = styled.div`
 
   .line-chart {
     width: 100%;
-    height: 250px;
+    height: 300px;
 
     // recharts custom
     .recharts-legend-item {

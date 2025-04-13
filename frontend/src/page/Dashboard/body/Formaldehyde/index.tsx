@@ -1,4 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+} from "@mui/material";
 import {
   LineChart,
   Line,
@@ -18,6 +26,7 @@ import {
 } from "../../../../services/https";
 import { BlockContentWrap, BlockTitle } from "../../../../style/global/default";
 import { VisitorsBlockWrap } from "./formaldehyde";
+import { FcDeleteDatabase } from "react-icons/fc";
 
 // Types
 type TooltipPayload = {
@@ -60,7 +69,7 @@ const CustomTooltipContent: React.FC<CustomTooltipProps> = ({ payload }) => {
   );
 };
 
-const VisitorsBlock: React.FC = () => {
+const Formaldehyde: React.FC = () => {
   const currentYear = dayjs().year();
   const [year, setYear] = useState<number>(currentYear);
   const [startYear, setStartYear] = useState<number>(2024);
@@ -76,20 +85,22 @@ const VisitorsBlock: React.FC = () => {
     "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
   ];
 
+  const isDailyInitialized = useRef(false);
+
   useEffect(() => {
     if (filterType === 'monthly') {
       fetchMonthlyData();
     } else if (filterType === 'yearly') {
       fetchYearlyData();
     } else if (filterType === 'daily') {
-      // Set default start and end date when "daily" filter is selected
-      const today = dayjs();
-      const sevenDaysLater = today.add(7, 'day');
-
-      setStartDate(today.format("YYYY-MM-DD"));
-      setEndDate(sevenDaysLater.format("YYYY-MM-DD"));
-
-      fetchDailyData(); // Fetch data for the default range
+      if (!isDailyInitialized.current) {
+        const today = dayjs();
+        const sevenDaysLater = today.add(7, 'day');
+        setStartDate(today.format("YYYY-MM-DD"));
+        setEndDate(sevenDaysLater.format("YYYY-MM-DD"));
+        isDailyInitialized.current = true;
+      }
+      fetchDailyData();
     }
   }, [year, startYear, endYear, startDate, endDate, filterType]);
 
@@ -160,15 +171,12 @@ const VisitorsBlock: React.FC = () => {
       }
 
       const res = await FindDataHardwareByDateRange(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
-      
-      // แปลงข้อมูลวันที่ให้แสดงเป็นวันที่เท่านั้น (1, 2, 3 เป็นต้น)
       const results = res?.data?.map((item: any) => ({
-        date: dayjs(item.Date).format("D"),  // แปลง Date เป็นวันที่
+        date: dayjs(item.Date).format("D"),
         Formaldehyde: item?.Formaldehyde ?? 0,
       }));
 
-      console.log(results);
-      setData(results); 
+      setData(results);
     } catch (error) {
       console.error("Error fetching daily data:", error);
     }
@@ -176,114 +184,132 @@ const VisitorsBlock: React.FC = () => {
     setLoading(false);
   };
 
+  const isDataEmpty = data.every(item => item.Formaldehyde === 0);
+
   return (
     <VisitorsBlockWrap>
-      <div className="block-head flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <BlockTitle className="block-title">
           <h3>Formaldehyde Data</h3>
         </BlockTitle>
 
-        <div className="flex items-center gap-4">
-          <label>
-            <input
-              type="radio"
-              value="monthly"
-              checked={filterType === 'monthly'}
-              onChange={() => setFilterType('monthly')}
-            /> ค้นหารายเดือน
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="yearly"
-              checked={filterType === 'yearly'}
-              onChange={() => setFilterType('yearly')}
-            /> ค้นหารายปี
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="daily"
-              checked={filterType === 'daily'}
-              onChange={() => setFilterType('daily')}
-            /> ค้นหารายวัน
-          </label>
+        <div className="flex gap-2 w-full md:w-auto md:ml-auto">
+          <FormControl sx={{ minWidth: 150 }} size="small">
+            <InputLabel id="select-filter-type-label">Filter Type</InputLabel>
+            <Select
+              labelId="select-filter-type-label"
+              multiple
+              value={[filterType]}
+              label="Filter Type"
+              onChange={(e) => {
+                const selected = e.target.value as string[];
+                if (selected.length > 0) {
+                  setFilterType(selected[selected.length - 1] as 'daily' | 'monthly' | 'yearly');
+                }
+              }}
+              renderValue={(selected) =>
+                (selected as string[]).map((value) => {
+                  switch (value) {
+                    case 'monthly': return 'Month';
+                    case 'yearly': return 'Year';
+                    case 'daily': return 'Day';
+                    default: return value;
+                  }
+                }).join(', ')
+              }
+            >
+              {[
+                { value: 'monthly', label: 'Month' },
+                { value: 'yearly', label: 'Year' },
+                { value: 'daily', label: 'Day' },
+              ].map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  <Checkbox checked={filterType === option.value} />
+                  <ListItemText primary={option.label} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* เงื่อนไขแบบ Monthly */}
+          {filterType === 'monthly' && (
+            <FormControl sx={{ minWidth: 120 }} size="small">
+              <InputLabel id="select-filter-type-label">Year</InputLabel>
+              <Select
+                value={year}
+                labelId="select-filter-type-label"
+                label="Year"
+                onChange={(e) => setYear(Number(e.target.value))}
+              >
+                {[2022, 2023, 2024, 2025].map((y) => (
+                  <MenuItem key={y} value={y}>{y}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
+          {/* เงื่อนไขแบบ Yearly */}
+          {filterType === 'yearly' && (
+            <>
+              <FormControl sx={{ minWidth: 120 }} size="small">
+                <InputLabel>Start Year</InputLabel>
+                <Select
+                  value={startYear}
+                  label="Start Year"
+                  onChange={(e) => setStartYear(Number(e.target.value))}
+                >
+                  {[2022, 2023, 2024, 2025, 2026, 2027].map((y) => (
+                    <MenuItem key={y} value={y}>{y}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ minWidth: 120 }} size="small">
+                <InputLabel>End Year</InputLabel>
+                <Select
+                  value={endYear}
+                  label="End Year"
+                  onChange={(e) => setEndYear(Number(e.target.value))}
+                >
+                  {[2022, 2023, 2024, 2025, 2026, 2027].map((y) => (
+                    <MenuItem key={y} value={y}>{y}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </>
+          )}
+
+          {filterType === 'daily' && (
+            <div className="flex items-center gap-2 ml-auto">
+              <input
+                type="date"
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+              <span>To</span>
+              <input
+                type="date"
+                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          )}
         </div>
-
-        {/* เงื่อนไขแสดง input filter */}
-        {filterType === 'monthly' && (
-          <select
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-          >
-            {[2023, 2024, 2025].map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-        )}
-
-        {filterType === 'yearly' && (
-          <>
-            <select
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-              value={startYear}
-              onChange={(e) => setStartYear(Number(e.target.value))}
-            >
-              {[...Array(12)].map((_, i) => {
-                const y = 2024 + i;
-                return <option key={y} value={y}>{y}</option>;
-              })}
-            </select>
-            <span> ถึง </span>
-            <select
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-              value={endYear}
-              onChange={(e) => setEndYear(Number(e.target.value))}
-            >
-              {[...Array(12)].map((_, i) => {
-                const y = 2024 + i;
-                return <option key={y} value={y}>{y}</option>;
-              })}
-            </select>
-          </>
-        )}
-
-        {filterType === 'daily' && (
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <span>ถึง</span>
-            <input
-              type="date"
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
-        )}
       </div>
 
       <BlockContentWrap className="line-chart">
         {loading ? (
           <div className="text-center text-gray-500 py-10">Loading...</div>
+        ) : isDataEmpty ? (
+          <div className="text-center text-gray-500 py-10 text-[32px] font-[600] flex justify-center">Sorry, no data available <FcDeleteDatabase size={40} className="ml-1 mt-2" /></div>
         ) : (
           <>
-            <div className="text-center text-gray-500 py-2">
-              {filterType === 'daily' && startDate && endDate ? (
-                <p>From {dayjs(startDate).format('D MMM, YYYY')} to {dayjs(endDate).format('D MMM, YYYY')}</p>
-              ) : null}
-            </div>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
-                margin={{ top: 10, right: 5, left: -20, bottom: 0 }}
+                margin={{ top: 14, right: 5, left: -17, bottom: 0 }}
               >
                 <CartesianGrid
                   stroke="#f8f8f9"
@@ -296,8 +322,8 @@ const VisitorsBlock: React.FC = () => {
                     filterType === 'monthly'
                       ? 'month'
                       : filterType === 'yearly'
-                      ? 'year'
-                      : 'date'
+                        ? 'year'
+                        : 'date'
                   }
                   tickSize={0}
                   axisLine={false}
@@ -322,7 +348,15 @@ const VisitorsBlock: React.FC = () => {
                     fill: "#7B91B0",
                     fontSize: 14,
                   }}
+                  label={{
+                    value: 'ppm',
+                    position: 'top',
+                    fill: "#7B91B0",
+                    fontSize: 14,
+                    className: 'ppm-label',
+                  }}
                 />
+
                 <Tooltip content={<CustomTooltipContent />} />
                 <Legend iconType="square" formatter={formatLegendValue} />
                 <ReferenceLine isFront x="May" stroke="#F64E60" strokeDasharray="3 3" />
@@ -331,6 +365,7 @@ const VisitorsBlock: React.FC = () => {
                   strokeWidth={4}
                   type="basis"
                   dataKey="Formaldehyde"
+                  name={`Formaldehyde (${filterType === "daily" ? "Day" : filterType === "monthly" ? "Month" : "Year"})`}
                   stroke="#A700FF"
                 />
               </LineChart>
@@ -342,4 +377,4 @@ const VisitorsBlock: React.FC = () => {
   );
 };
 
-export default VisitorsBlock;
+export default Formaldehyde;
