@@ -16,6 +16,7 @@ import {
   FindDataHardwareByYear,
   FindDataHardwareByDateRange,
 } from "../../../../services/https";
+  // @ts-ignore
 import React, { useEffect, useRef, useState } from "react";
 import {
   FormControl,
@@ -43,6 +44,7 @@ const TempANDHumid = () => {
   const [startYear, setStartYear] = useState<number>(2024);
   const [endYear, setEndYear] = useState<number>(2025);
   const [data, setData] = useState<ChartData[]>([]);
+    // @ts-ignore
   const [loading, setLoading] = useState<boolean>(true);
   const [filterType, setFilterType] = useState<'monthly' | 'yearly' | 'daily'>('monthly');
   const [startDate, setStartDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
