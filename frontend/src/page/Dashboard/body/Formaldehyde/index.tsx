@@ -190,7 +190,7 @@ const Formaldehyde: React.FC = () => {
     <VisitorsBlockWrap>
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <BlockTitle className="block-title">
-          <h3>Formaldehyde Data</h3>
+          <h3 style={{backgroundColor:"#9D54F9",width:"240px",borderRadius:"5px",height:"40px",display:"flex",justifyContent:"center",alignItems:"center",color:"white"}}>Formaldehyde Data</h3>
         </BlockTitle>
 
         <div className="flex gap-2 w-full md:w-auto md:ml-auto">

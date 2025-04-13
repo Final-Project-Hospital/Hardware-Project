@@ -158,7 +158,7 @@ const TempANDHumid = () => {
     <RevenueWrap>
       <div className="block-head" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "16px" }}>
         <BlockTitle className="block-title">
-          <h3>Temp & Humidity Data</h3>
+          <h3 style={{backgroundColor:"#F9AB31",width:"240px",borderRadius:"5px",height:"40px",display:"flex",justifyContent:"center",alignItems:"center",color:"white"}}>Temp & Humidity Data</h3>
         </BlockTitle>
 
         <div className="flex gap-2 w-full md:w-auto md:ml-auto">

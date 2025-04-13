@@ -29,6 +29,7 @@ import ProgrssTempreture from "../../../../component/progress/tempreture";
 import ProgrssHumidity from "../../../../component/progress/humidity";
 import { CSVLink } from "react-csv";
 import { MdEditSquare } from "react-icons/md";
+import { MdWavingHand } from "react-icons/md";
 
 const Dashboard = () => {
   const [hardwareData, setHardwareData] = useState<any[]>([]);
@@ -116,8 +117,11 @@ const Dashboard = () => {
     <>
       <div className="w-full py-2 px-5 border bg-white border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 justify-between rounded-md">
         <div className="info">
-          <h1 className="text-[35px] font-bold leading-10 mb-3">
-            Good Morning,<br />Cameroni
+          <h1 className="text-[35px] font-bold leading-10 mb-">
+            Good Morning,<br />
+            <span className="inline-flex items-center gap-2">
+              Cameroni <MdWavingHand size={35} className="text-yellow-400 ml-1" />
+            </span>
           </h1>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam culpa, ab velit eos totam voluptas!</p>
           <br />
@@ -173,7 +177,7 @@ const Dashboard = () => {
                   {selectedColumns.includes("Formaldehyde") && <TableCell><strong>Formaldehyde ppm.</strong></TableCell>}
                   {selectedColumns.includes("Temperature") && <TableCell><strong>Temperature °C.</strong></TableCell>}
                   {selectedColumns.includes("Humidity") && <TableCell><strong>Humidity %</strong></TableCell>}
-                  {selectedColumns.includes("Action") && <TableCell><strong className="flex">Action <MdEditSquare size={20} className="ml-2 text-blue-500"/></strong></TableCell>}
+                  {selectedColumns.includes("Action") && <TableCell><strong className="flex">Action <MdEditSquare size={20} className="ml-2 text-blue-500" /></strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
