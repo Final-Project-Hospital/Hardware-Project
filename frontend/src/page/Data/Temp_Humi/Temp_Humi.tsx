@@ -232,7 +232,7 @@ const Temp_Humi = () => {
             <div className="contentMain flex justify-center">
                 <div className="contentRight py-8 px-14 w-full">
                     <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "15px", justifyContent: "space-between" }}>
-                        <h3 style={{
+                        <h3 className="font-[700]" style={{
                             backgroundColor: "#F9AB31",
                             width: "320px",
                             borderRadius: "5px",
@@ -322,18 +322,18 @@ const Temp_Humi = () => {
                                         <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                                             <defs>
                                                 <linearGradient id="tempColor" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#0095FF" stopOpacity={0.2} />
-                                                    <stop offset="95%" stopColor="#0095FF" stopOpacity={0} />
+                                                    <stop offset="5%" stopColor="#E28743" stopOpacity={0.2} />
+                                                    <stop offset="95%" stopColor="#E28743" stopOpacity={0} />
                                                 </linearGradient>
                                                 <linearGradient id="humColor" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#07E098" stopOpacity={0.2} />
-                                                    <stop offset="95%" stopColor="#07E098" stopOpacity={0} />
+                                                    <stop offset="5%" stopColor="#55AAF3" stopOpacity={0.2} />
+                                                    <stop offset="95%" stopColor="#55AAF3" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
                                             <Tooltip content={<CustomTooltipContent />} />
                                             <Legend />
-                                            <Area type="monotone" dataKey="Tempreture" stroke="#0095FF" fillOpacity={1} fill="url(#tempColor)" strokeWidth={2} dot={{ stroke: "#0095FF", fill: "#0095FF" }} />
-                                            <Area type="monotone" dataKey="Humidity" stroke="#07E098" fillOpacity={1} fill="url(#humColor)" strokeWidth={2} dot={{ stroke: "#07E098", fill: "#07E098" }} />
+                                            <Area type="monotone" dataKey="Tempreture" stroke="#E28743" fillOpacity={1} fill="url(#tempColor)" strokeWidth={2} dot={{ stroke: "#E28743", fill: "#E28743" }} />
+                                            <Area type="monotone" dataKey="Humidity" stroke="#55AAF3" fillOpacity={1} fill="url(#humColor)" strokeWidth={2} dot={{ stroke: "#55AAF3", fill: "#55AAF3" }} />
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </BlockContentWrap>
@@ -362,14 +362,14 @@ const Temp_Humi = () => {
                                             <Bar
                                                 dataKey="Tempreture"
                                                 stackId="a"
-                                                fill="#0095FF"
+                                                fill="#E28743"
                                                 radius={[0, 0, 4, 4]}
                                                 barSize={16}
                                             />
                                             <Bar
                                                 dataKey="Humidity"
                                                 stackId="a"
-                                                fill="#00E096"
+                                                fill="#55AAF3"
                                                 radius={[4, 4, 0, 0]}
                                                 barSize={16}
                                             />

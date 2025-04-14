@@ -6,7 +6,7 @@ export const CustomerWrap = styled.div`
 
   .area-chart {
     width: 100%;
-    height: 270px;
+    height: 300px;
 
     // recharts custom
     .recharts-legend-item {

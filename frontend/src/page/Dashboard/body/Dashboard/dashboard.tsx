@@ -117,13 +117,13 @@ const Dashboard = () => {
     <>
       <div className="w-full py-2 px-5 border bg-white border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 justify-between rounded-md">
         <div className="info">
-          <h1 className="text-[35px] font-bold leading-10 mb-">
+          <h1 className="text-[35px] font-bold leading-11 mb-">
             Good Morning,<br />
             <span className="inline-flex items-center gap-2">
-              Cameroni <MdWavingHand size={35} className="text-yellow-400 ml-1" />
+              Environmental Engineering <MdWavingHand size={35} className="text-yellow-400 ml-1" />
             </span>
           </h1>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam culpa, ab velit eos totam voluptas!</p>
+          <p>Environmental engineers monitor temperature, humidity, and formaldehyde levels to assess air quality and ensure a safe and healthy environment.!</p>
           <br />
           <Button className="btn-blue !capitalize"><FaPlus className="mr-2" /> Add Hardware IP</Button>
         </div>

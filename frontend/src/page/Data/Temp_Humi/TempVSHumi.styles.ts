@@ -6,8 +6,7 @@ export const VolumeServiceWrap = styled.div`
 
   .stacked-bar-chart {
     width: 100%;
-    height: 250px;
-    margin-bottom: 20px;
+    height: 300px;
 
     .recharts-legend-item {
       display: inline-flex !important;
