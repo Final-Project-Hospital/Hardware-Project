@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BlockWrapStyles } from "../../../../style/global/default";
+import { BlockWrapStyles } from "../../../style/global/default";
 
 export const CustomerWrap = styled.div`
   ${BlockWrapStyles}
