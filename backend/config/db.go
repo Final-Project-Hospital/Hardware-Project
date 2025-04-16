@@ -19,7 +19,7 @@ func DB() *gorm.DB {
 }
 
 func ConnectionDB() {
-	database, err := gorm.Open(sqlite.Open("hospital.db?cache=shared"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open("hardware.db?cache=shared"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}

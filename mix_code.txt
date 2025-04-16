@@ -1,0 +1,165 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <Firebase_ESP_Client.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "DHTesp.h"
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
+#include <time.h>
+
+// WiFi & Firebase Configuration
+#define WIFI_SSID "vivo Y33T"
+#define WIFI_PASSWORD "0935096372"
+#define API_KEY "AIzaSyBFJYSrzujy2-ULdLSe45S9_0gOfrbjeik"
+#define DATABASE_URL "https://esp32-environment-sensor-default-rtdb.firebaseio.com/"
+
+// Google Sheets webhook
+const char serverName[] PROGMEM = "https://script.google.com/macros/s/AKfycby4zYHxIXY09v2bGhfLEMg3JcPLqcSGIDCyqMxA24w8mGXlZ1VxxlXqFgb8jxdkjHGW/exec";
+
+// LINE Notify
+const char LINE_TOKEN[] PROGMEM = "fu2y79teeVFwE577ZCbwXOyHIYcYYK4rrubebwDEcMouX8PNzDZ4zCsnW+quBLQ9RxcaME5vQ3I1BW82d1/ZYezvWklVMUk+EGGfXRmI4jxXkFCtWQ+PRtJs9DsHDRjIqmrwKi6sd/Xovtb4QbodrwdB04t89/1O/w1cDnyilFU=";
+const char LINE_USER_ID[] PROGMEM = "U3af93a2f92b1048757172584d47571c8";
+
+// DHT22
+#define pinDHT22 15
+DHTesp dht;
+
+// Firebase
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+
+// WebSocket
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+// ฟังก์ชันเวลาปัจจุบัน
+void getCurrentDateTime(String &dateStr, String &timeStr) {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) return;
+
+  char date[16], time[16];
+  strftime(date, sizeof(date), "%Y-%m-%d", &timeinfo);
+  strftime(time, sizeof(time), "%H:%M:%S", &timeinfo);
+
+  dateStr = String(date);
+  timeStr = String(time);
+}
+
+// บันทึก Google Sheets
+void logToGoogleSheet(const String &dateStr, const String &timeStr, float temperature, float humidity, const String &status) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/json");
+
+    char payload[200];
+    snprintf(payload, sizeof(payload),
+             "{\"date\":\"%s\",\"time\":\"%s\",\"status\":\"%s\",\"temperature\":\"%.1f\",\"humidity\":\"%.1f\"}",
+             dateStr.c_str(), timeStr.c_str(), status.c_str(), temperature, humidity);
+
+    int responseCode = http.POST(payload);
+    Serial.printf("Google Sheets response: %d\n", responseCode);
+    http.end();
+  }
+}
+
+// ส่งข้อความผ่าน LINE
+void sendLineMessage(const char *msg) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin("https://api.line.me/v2/bot/message/push");
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("Authorization", "Bearer " + String(LINE_TOKEN));
+
+    char payload[300];
+    snprintf(payload, sizeof(payload),
+             "{\"to\":\"%s\",\"messages\":[{\"type\":\"text\",\"text\":\"%s\"}]}",
+             LINE_USER_ID, msg);
+
+    int statusCode = http.POST(payload);
+    Serial.printf("LINE Status: %d\n", statusCode);
+    http.end();
+  }
+}
+
+// ส่งไป Firebase
+void logToFirebase(const String &timeStr, float temperature, float humidity) {
+  FirebaseJson json;
+  json.set("temperature", temperature);
+  json.set("humidity", humidity);
+  json.set("timestamp", timeStr);
+
+  String path = "/sensorData/" + timeStr;
+  if (Firebase.RTDB.setJSON(&fbdo, path.c_str(), &json)) {
+    Serial.println("Firebase: Data saved");
+  } else {
+    Serial.println("Firebase Error: " + fbdo.errorReason());
+  }
+}
+
+// ส่ง WebSocket
+void sendSensorData(float temperature, float humidity, const String &status) {
+  char json[150];
+  snprintf(json, sizeof(json),
+           "{\"temperature\":%.2f,\"humidity\":%.2f,\"status\":\"%s\"}",
+           temperature, humidity, status.c_str());
+  ws.textAll(json);
+}
+
+// WebSocket Event
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+             void *arg, uint8_t *data, size_t len) {
+  if (type == WS_EVT_CONNECT) Serial.println("WebSocket client connected");
+  else if (type == WS_EVT_DISCONNECT) Serial.println("WebSocket client disconnected");
+}
+
+void setup() {
+  Serial.begin(115200);
+  dht.setup(pinDHT22, DHTesp::DHT22);
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println("\nWiFi connected");
+
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+  config.token_status_callback = tokenStatusCallback;
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+
+  configTime(7 * 3600, 0, "pool.ntp.org");
+
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
+  server.begin();
+}
+
+void loop() {
+  float temperature = dht.getTemperature();
+  float humidity = dht.getHumidity();
+  String status = dht.getStatusString();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    status = "ERROR";
+  } else if (status == "OK") {
+    status = "Ready";
+  }
+
+  String dateStr, timeStr;
+  getCurrentDateTime(dateStr, timeStr);
+
+  logToGoogleSheet(dateStr, timeStr, temperature, humidity, status);
+  logToFirebase(timeStr, temperature, humidity);
+  sendSensorData(temperature, humidity, status);
+
+  if (temperature > 34) {
+    sendLineMessage("🚨 อุณหภูมิสูงเกินกำหนด!");
+  }
+
+  delay(5000);
+}
