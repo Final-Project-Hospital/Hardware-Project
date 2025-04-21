@@ -25,7 +25,7 @@ const Formaldehyde = () => {
   const [hardwareData, setHardwareData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(["Formaldehyde"]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(["Formaldehyde", "Date"]);
   const [searchText, setSearchText] = useState<string>("");
   const [csvData, setCsvData] = useState<any[]>([]);
   const [downloadFilename, setDownloadFilename] = useState("hardware-data.csv");
@@ -50,13 +50,23 @@ const Formaldehyde = () => {
   const getAllDataForCSV = () => {
     return hardwareData.map((item, index) => ({
       "No": index + 1,
-      Date: item.Date,
+      Date: item.Date
+        ? ` ${new Date(item.Date).toLocaleString("th-TH", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })}`
+        : "-",
       Formaldehyde: item.Formaldehyde,
     }));
   };
 
   const filteredData = hardwareData.filter(
     (item) =>
+      item.Date.toString().toLowerCase().includes(searchText.toLowerCase()) ||
       item.Formaldehyde.toString().toLowerCase().includes(searchText.toLowerCase())
   );
 
@@ -135,9 +145,9 @@ const Formaldehyde = () => {
               <Table stickyHeader aria-label="hardware table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>No</TableCell>
-                    {selectedColumns.includes("Formaldehyde") && <TableCell>Formaldehyde</TableCell>}
-                    {selectedColumns.includes("Action") && <TableCell>Action</TableCell>}
+                    <TableCell><strong>No</strong></TableCell>
+                    {selectedColumns.includes("Date") && <TableCell><strong>Date Time</strong></TableCell>}
+                    {selectedColumns.includes("Formaldehyde") && <TableCell><strong>Formaldehyde</strong></TableCell>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -146,6 +156,19 @@ const Formaldehyde = () => {
                     .map((item, index) => (
                       <TableRow hover key={item.ID}>
                         <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                        {selectedColumns.includes("Date") && (
+                          <TableCell>
+                            <p className="text-[14px] w-[150px] font-semibold">
+                              {item.Date ? new Date(item.Date).toLocaleString("th-TH", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false
+                              }) : "-"}
+                            </p>
+                          </TableCell>)}
                         {selectedColumns.includes("Formaldehyde") && (
                           <TableCell>
                             <p className="text-[14px] w-[150px] font-semibold">{item.Formaldehyde ?? "-"}</p>

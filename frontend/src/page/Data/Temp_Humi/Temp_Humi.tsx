@@ -68,31 +68,31 @@ const CustomTooltipContent = ({ payload }: CustomTooltipProps) => {
             </ul>
         </div>
     );
-};  
+};
 // @ts-ignore
 const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
     if (active && payload && payload.length > 0) {
-      const item = payload[0].payload as {
-        Tempreture: number;
-        Humidity: number;
-        date?: string;
-        month?: string;
-        year?: string;
-      };
-  
-      return (
-        <div className="bg-white border p-2 rounded shadow text-sm">
-          <p className="recharts-tooltip-label font-semibold mb-1">
-            {item.date || item.month || item.year || "No date"}
-          </p>
-          <p className="text-blue-500">Tempreture: {item.Tempreture}</p>
-          <p className="text-green-500">Humidity: {item.Humidity}</p>
-        </div>
-      );
+        const item = payload[0].payload as {
+            Tempreture: number;
+            Humidity: number;
+            date?: string;
+            month?: string;
+            year?: string;
+        };
+
+        return (
+            <div className="bg-white border p-2 rounded shadow text-sm">
+                <p className="recharts-tooltip-label font-semibold mb-1">
+                    {item.date || item.month || item.year || "No date"}
+                </p>
+                <p className="text-blue-500">Tempreture: {item.Tempreture}</p>
+                <p className="text-green-500">Humidity: {item.Humidity}</p>
+            </div>
+        );
     }
-  
+
     return null;
-  };
+};
 
 
 const formatLegendValue = (
@@ -111,7 +111,7 @@ const Temp_Humi = () => {
     const [hardwareData, setHardwareData] = useState<any[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(["Temperature", "Humidity"]);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(["Date", "Temperature", "Humidity"]);
     const [searchText, setSearchText] = useState<string>("");
     const [csvData, setCsvData] = useState<any[]>([]);
     const [downloadFilename, setDownloadFilename] = useState("hardware-data.csv");
@@ -195,7 +195,16 @@ const Temp_Humi = () => {
     const getAllDataForCSV = () => {
         return hardwareData.map((item, index) => ({
             "No": index + 1,
-            Date: item.Date,
+            Date: item.Date
+                ? ` ${new Date(item.Date).toLocaleString("th-TH", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                })}`
+                : "-",
             Temperature: item.Tempreture,
             Humidity: item.Humidity,
         }));
@@ -203,6 +212,7 @@ const Temp_Humi = () => {
 
     const filteredData = hardwareData.filter(
         (item) =>
+            item.Date.toString().toLowerCase().includes(searchText.toLowerCase()) ||
             item.Tempreture.toString().toLowerCase().includes(searchText.toLowerCase()) ||
             item.Humidity.toString().toLowerCase().includes(searchText.toLowerCase())
     );
@@ -352,7 +362,7 @@ const Temp_Humi = () => {
                                             data={data}
                                             margin={{ top: 5, right: 5, left: 5 }}
                                         >
-                                            
+
                                             <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
                                             <Legend
                                                 iconType="circle"
@@ -424,9 +434,10 @@ const Temp_Humi = () => {
                                 <Table stickyHeader aria-label="hardware table">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>No</TableCell>
-                                            {selectedColumns.includes("Temperature") && <TableCell>Temperature</TableCell>}
-                                            {selectedColumns.includes("Humidity") && <TableCell>Humidity</TableCell>}
+                                            <TableCell><strong>No</strong></TableCell>
+                                            {selectedColumns.includes("Date") && <TableCell><strong>Date Time</strong></TableCell>}
+                                            {selectedColumns.includes("Temperature") && <TableCell><strong>Temperature</strong></TableCell>}
+                                            {selectedColumns.includes("Humidity") && <TableCell><strong>Humidity</strong></TableCell>}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -435,6 +446,19 @@ const Temp_Humi = () => {
                                             .map((item, index) => (
                                                 <TableRow hover key={item.ID}>
                                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                                                    {selectedColumns.includes("Date") && (
+                                                        <TableCell>
+                                                            <p className="text-[14px] w-[150px] font-semibold">
+                                                                {item.Date ? new Date(item.Date).toLocaleString("th-TH", {
+                                                                    year: "numeric",
+                                                                    month: "short",
+                                                                    day: "numeric",
+                                                                    hour: "2-digit",
+                                                                    minute: "2-digit",
+                                                                    hour12: false
+                                                                }) : "-"}
+                                                            </p>
+                                                        </TableCell>)}
                                                     {selectedColumns.includes("Temperature") && <TableCell>{item.Tempreture ?? "-"}</TableCell>}
                                                     {selectedColumns.includes("Humidity") && <TableCell>{item.Humidity ?? "-"}</TableCell>}
                                                 </TableRow>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ListDataHardware } from "../../../../services/https";
 import DashboardBoxs from "./dashboardboxs";
-import DashboardBoxsFirebase from "./firebase_test";
 import picture1 from "../../../../assets/ESP32.png";
 import { FaPlus } from "react-icons/fa6";
 import {
@@ -36,7 +35,7 @@ const Dashboard = () => {
   const [hardwareData, setHardwareData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(["Formaldehyde", "Temperature", "Humidity", "Action"]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(["Date", "Formaldehyde", "Temperature", "Humidity", "Action"]);
   const [searchText, setSearchText] = useState<string>("");
 
   const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
@@ -63,7 +62,16 @@ const Dashboard = () => {
   const getAllDataForCSV = () => {
     return hardwareData.map((item, index) => ({
       "No": index + 1,
-      Date: item.Date, // เพิ่ม Date เสมอ
+      Date: item.Date
+        ? ` ${new Date(item.Date).toLocaleString("th-TH", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })}`
+        : "-",
       Formaldehyde: item.Formaldehyde,
       Temperature: item.Tempreture,
       Humidity: item.Humidity,
@@ -71,23 +79,45 @@ const Dashboard = () => {
     }));
   };
 
+
+
   const getSelectedDataForCSV = () => {
     return hardwareData.map((item, index) => {
       const row: any = { "No": index + 1 };
 
-      row["Date"] = item.Date;
+      row["Date"] = item.Date
+        ? ` ${new Date(item.Date).toLocaleString("th-TH", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })}`
+        : "-";
 
-      if (selectedColumns.includes("Formaldehyde")) row["Formaldehyde"] = item.Formaldehyde;
-      if (selectedColumns.includes("Temperature")) row["Temperature"] = item.Tempreture;
-      if (selectedColumns.includes("Humidity")) row["Humidity"] = item.Humidity;
-      if (selectedColumns.includes("Action")) row["Action"] = "Edit";
+      if (selectedColumns.includes("Formaldehyde")) {
+        row["Formaldehyde"] = item.Formaldehyde ?? "-";
+      }
+      if (selectedColumns.includes("Temperature")) {
+        row["Temperature"] = item.Tempreture ?? "-";
+      }
+      if (selectedColumns.includes("Humidity")) {
+        row["Humidity"] = item.Humidity ?? "-";
+      }
+      if (selectedColumns.includes("Action")) {
+        row["Action"] = "Edit";
+      }
 
       return row;
     });
   };
 
+
+
   const filteredData = hardwareData.filter(
     (item) =>
+      item.Date.toString().toLowerCase().includes(searchText.toLowerCase()) ||
       item.Formaldehyde.toString().toLowerCase().includes(searchText.toLowerCase()) ||
       item.Tempreture.toString().toLowerCase().includes(searchText.toLowerCase()) ||
       item.Humidity.toString().toLowerCase().includes(searchText.toLowerCase())
@@ -157,7 +187,7 @@ const Dashboard = () => {
                 label="Show Columns"
                 renderValue={(selected) => (selected as string[]).join(", ")}
               >
-                {["Formaldehyde", "Temperature", "Humidity", "Action"].map((col) => (
+                {["Date", "Formaldehyde", "Temperature", "Humidity", "Action"].map((col) => (
                   <MenuItem key={col} value={col}>
                     <Checkbox checked={selectedColumns.indexOf(col) > -1} />
                     <ListItemText primary={col} />
@@ -174,6 +204,7 @@ const Dashboard = () => {
               <TableHead>
                 <TableRow>
                   <TableCell><strong>No</strong></TableCell>
+                  {selectedColumns.includes("Date") && <TableCell><strong>Date Time</strong></TableCell>}
                   {selectedColumns.includes("Formaldehyde") && <TableCell><strong>Formaldehyde ppm.</strong></TableCell>}
                   {selectedColumns.includes("Temperature") && <TableCell><strong>Temperature °C.</strong></TableCell>}
                   {selectedColumns.includes("Humidity") && <TableCell><strong>Humidity %</strong></TableCell>}
@@ -186,6 +217,19 @@ const Dashboard = () => {
                   .map((item, index) => (
                     <TableRow hover key={item.ID}>
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      {selectedColumns.includes("Date") && (
+                        <TableCell>
+                          <p className="text-[14px] w-[150px] font-semibold">
+                            {item.Date ? new Date(item.Date).toLocaleString("th-TH", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false
+                            }) : "-"}
+                          </p>
+                        </TableCell>)}
                       {selectedColumns.includes("Formaldehyde") && (
                         <TableCell>
                           <p className="text-[14px] w-[150px] font-semibold">{item.Formaldehyde ?? "-"}</p>
@@ -252,7 +296,7 @@ const Dashboard = () => {
             </Button>
             <Button variant="contained" onClick={() => {
               setCsvData(getSelectedDataForCSV());
-              setDownloadFilename("selected-columns.csv");
+              setDownloadFilename("selected-hardware-data.csv");
               setOpenDownloadDialog(false);
               setDownloadNow(true);
             }}>
@@ -265,11 +309,11 @@ const Dashboard = () => {
       {/* Hidden CSVLink Trigger */}
       {downloadNow && (
         <CSVLink
+          id="hiddenCSVDownloader"
           data={csvData}
           filename={downloadFilename}
           className="hidden"
           target="_blank"
-          id="hiddenCSVDownloader"
         />
       )}
     </>
