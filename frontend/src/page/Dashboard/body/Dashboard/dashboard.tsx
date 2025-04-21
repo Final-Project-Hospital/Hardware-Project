@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ListDataHardware } from "../../../../services/https";
 import DashboardBoxs from "./dashboardboxs";
+import DashboardBoxsFirebase from "./firebase_test";
 import picture1 from "../../../../assets/ESP32.png";
 import { FaPlus } from "react-icons/fa6";
 import {
@@ -129,7 +130,6 @@ const Dashboard = () => {
         </div>
         <img src={picture1} className="w-[230px]" />
       </div>
-
       <DashboardBoxs />
 
       <div className="card my-5 shadow-md sm:rounded-lg bg-white border-[hsla(0,0%,0%,0)] px-3 py-3">
