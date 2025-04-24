@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   // เชื่อมต่อ WebSocket
   useEffect(() => {
-    const ws = new WebSocket("ws://192.168.70.119/ws"); 
+    const ws = new WebSocket("ws://192.168.228.119/ws"); 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setTemperature(data.temperature); 
